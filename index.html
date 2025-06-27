@@ -100,7 +100,7 @@
 
         textarea.long-input {
             width: 100%; /* 셀 너비에 맞게 조정 */
-            height: 150px;
+            height: 100px;
             padding: 6px;
             border: 1px solid #b8daff;
             border-radius: 4px;
@@ -386,7 +386,7 @@
             </table>
         </div>
         <p class="banner-description">
-            ----- 작성한 내용 확인 후 아래 <strong>'이미지로 저장'</strong>을 눌러 패들렛에 업로드해주세요! ----- 
+            ----- 작성한 내용 확인 후 아래 <strong>'버튼'</strong>을 눌러 이미지를 저장해주세요! ----- 
         </p>
             <div style="text-align: center; margin-top: 20px;">
                 <button onclick="saveFormAsImage()">이미지로 저장</button>
@@ -463,53 +463,101 @@
 
             }
 
-            function saveFormAsImage() {
-                const formSections = document.querySelectorAll(".form-section");
-                const target = document.createElement("div");
-                target.style.backgroundColor = "#ffffff";
-                target.style.padding = "30px";
-                target.style.width = "100%";
-                target.style.fontFamily = "'Nanum Gothic', sans-serif";
+function saveFormAsImage() {
+    const formSections = document.querySelectorAll(".form-section");
+    const target = document.createElement("div");
+    target.style.backgroundColor = "#ffffff";
+    target.style.padding = "30px";
+    target.style.width = "100%";
+    target.style.fontFamily = "'Nanum Gothic', sans-serif";
 
-                formSections.forEach(section => {
-                    const cloned = section.cloneNode(true);
+    formSections.forEach(section => {
+        const cloned = section.cloneNode(true);
 
-                    // textarea -> div 변환 (내용이 짤리지 않도록)
-                    const textareas = cloned.querySelectorAll("textarea");
-                    textareas.forEach(textarea => {
-                        const div = document.createElement("div");
-                        div.style.border = "1px solid #ccc";
-                        div.style.padding = "10px";
-                        div.style.minHeight = "150px";
-                        div.style.whiteSpace = "pre-wrap"; // 줄바꿈 유지
-                        div.style.fontSize = "14px";
-                        div.innerText = textarea.value;
-                        textarea.parentNode.replaceChild(div, textarea);
-                    });
+        // textarea → div
+        const textareas = cloned.querySelectorAll("textarea");
+        textareas.forEach(textarea => {
+            const div = document.createElement("div");
+            div.style.border = "1px solid #ccc";
+            div.style.padding = "10px";
+            div.style.minHeight = "150px";
+            div.style.whiteSpace = "pre-wrap";
+            div.style.fontSize = "14px";
+            div.innerText = textarea.value;
+            textarea.parentNode.replaceChild(div, textarea);
+        });
 
-                    target.appendChild(cloned);
-                });
+        // number input → span (comma formatting)
+        const numberInputs = cloned.querySelectorAll('input[type="number"]');
+        numberInputs.forEach(input => {
+            const span = document.createElement("span");
+            const value = input.value.trim();
+            span.innerText = value ? parseInt(value).toLocaleString() : '';
+            span.style.fontSize = "14px";
+            input.parentNode.replaceChild(span, input);
+        });
 
-                document.body.appendChild(target);
-                window.scrollTo(0, 0);
+        // text input → span
+        const textInputs = cloned.querySelectorAll('input[type="text"]');
+        textInputs.forEach(input => {
+            const span = document.createElement("span");
+            span.innerText = input.value.trim();
+            span.style.fontSize = "14px";
+            input.parentNode.replaceChild(span, input);
+        });
 
-                html2canvas(target, {
-                    backgroundColor: '#ffffff',
-                    useCORS: true,
-                    scale: 2
-                }).then(canvas => {
-                    const link = document.createElement("a");
-                    link.href = canvas.toDataURL("image/png");
-                    link.download = "창업계획서.png";
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    document.body.removeChild(target);
-                }).catch(err => {
-                    console.error("html2canvas 에러:", err);
-                    alert("이미지 저장 중 문제가 발생했습니다.");
+        // 🔥 "관리" 열 제거
+        cloned.querySelectorAll("table").forEach(table => {
+            const thead = table.querySelector("thead");
+            const tbody = table.querySelector("tbody");
+
+            if (thead) {
+                const ths = thead.querySelectorAll("th");
+                ths.forEach((th, index) => {
+                    if (th.innerText.trim() === "관리") {
+                        th.remove();
+                        if (tbody) {
+                            tbody.querySelectorAll("tr").forEach(row => {
+                                const tds = row.querySelectorAll("td");
+                                if (tds[index]) tds[index].remove();
+                            });
+                        }
+                    }
                 });
             }
+        });
+                
+        // ✅ 항목 추가 버튼 숨기기
+        const addRowBtn = cloned.querySelector('button[onclick="addRow()"]');
+        if (addRowBtn) {
+            addRowBtn.remove();
+        }
+
+        target.appendChild(cloned);
+    });
+
+    // ✅ 이미지로 저장
+    document.body.appendChild(target);
+    window.scrollTo(0, 0);
+
+    html2canvas(target, {
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        scale: 2
+    }).then(canvas => {
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = "창업계획서.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        document.body.removeChild(target);
+    }).catch(err => {
+        console.error("html2canvas 에러:", err);
+        alert("이미지 저장 중 문제가 발생했습니다.");
+    });
+}
+
 
 
 
