@@ -457,6 +457,9 @@
 
             }
 
+
+
+
 function saveFormAsImage() {
     const formSections = document.querySelectorAll(".form-section");
     const target = document.createElement("div");
@@ -500,7 +503,7 @@ function saveFormAsImage() {
             input.parentNode.replaceChild(span, input);
         });
 
-        // 🔥 "관리" 열 제거
+        // "관리" 열 제거
         cloned.querySelectorAll("table").forEach(table => {
             const thead = table.querySelector("thead");
             const tbody = table.querySelector("tbody");
@@ -520,8 +523,8 @@ function saveFormAsImage() {
                 });
             }
         });
-                
-        // ✅ 항목 추가 버튼 숨기기
+
+        // "항목 추가" 버튼 제거
         const addRowBtn = cloned.querySelector('button[onclick="addRow()"]');
         if (addRowBtn) {
             addRowBtn.remove();
@@ -530,7 +533,7 @@ function saveFormAsImage() {
         target.appendChild(cloned);
     });
 
-    // ✅ 이미지로 저장
+    // 이미지 캡처 및 저장
     document.body.appendChild(target);
     window.scrollTo(0, 0);
 
@@ -539,20 +542,39 @@ function saveFormAsImage() {
         useCORS: true,
         scale: 2
     }).then(canvas => {
-        const link = document.createElement("a");
-        link.href = canvas.toDataURL("image/png");
-        link.download = "창업계획서.png";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        if (isIOS) {
+            // iOS: 새 탭에 이미지 열기
+            const dataURL = canvas.toDataURL("image/png");
+            const newTab = window.open();
+            if (newTab) {
+                newTab.document.body.style.margin = '0';
+                const img = newTab.document.createElement("img");
+                img.src = dataURL;
+                img.style.maxWidth = "100%";
+                img.style.height = "auto";
+                newTab.document.body.appendChild(img);
+            } else {
+                alert("팝업 차단 설정을 해제해주세요.");
+            }
+        } else {
+            // 기타: 자동 다운로드
+            const link = document.createElement("a");
+            link.href = canvas.toDataURL("image/png");
+            link.download = "창업계획서.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
         document.body.removeChild(target);
     }).catch(err => {
         console.error("html2canvas 에러:", err);
         alert("이미지 저장 중 문제가 발생했습니다.");
+        document.body.removeChild(target);
     });
 }
-
-
 
 
         </script>
