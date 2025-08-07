@@ -577,25 +577,6 @@ function saveFormAsImage() {
     });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-    const fields = document.querySelectorAll("input[type='text'], input[type='number'], textarea");
-
-    fields.forEach(field => {
-        const key = field.id;
-        if (!key) return; // id 없는 항목은 저장하지 않음
-
-        // localStorage 값 불러오기
-        const saved = localStorage.getItem("field_" + key);
-        if (saved !== null) {
-            field.value = saved;
-        }
-
-        // 값 입력할 때마다 저장
-        field.addEventListener("input", () => {
-            localStorage.setItem("field_" + key, field.value);
-        });
-    });
-});
         </script>
 
     </div>
