@@ -301,11 +301,11 @@
                 </tr>
                 <tr>
                     <td>위치</td>
-                    <td><input type="text" class="long-input" id="item" placeholder="예: 대전 서구 도안동"></td>
+                    <td><input type="text" id="location" class="long-input" id="item" placeholder="예: 대전 서구 도안동"></td>
                 </tr>
                 <tr>
                     <td>업종</td>
-                    <td><input type="text" class="long-input" id="item" placeholder="예: 교육 > 교육 지원 > 기타 교육지원 서비스업"></td>
+                    <td><input type="text" id="industry" class="long-input" id="item" placeholder="예: 교육 > 교육 지원 > 기타 교육지원 서비스업"></td>
                 </tr>
             </table>
         </div><br>
@@ -324,11 +324,11 @@
                 </tr>
                 <tr>
                     <td>값</td>
-                    <td class="numeric"><input type="number" placeholder="" class="short-input"><span> 만원</span></td>
-                    <td class="numeric"><input type="number" placeholder="" class="short-input"><span> 개</span></td>
-                    <td class="numeric"><input type="number" placeholder="" class="short-input"><span> 명</span></td>
-                    <td><input type="text" placeholder="" class="long-input">
-                    <td><input type="text" placeholder="" class="long-input">
+                    <td class="numeric"><input type="number" id="avgSales" placeholder="" class="short-input"><span> 만원</span></td>
+                    <td class="numeric"><input type="number" id="storeCount" placeholder="" class="short-input"><span> 개</span></td>
+                    <td class="numeric"><input type="number" id="dailyFootTraffic" placeholder="" class="short-input"><span> 명</span></td>
+                    <td><input type="text" placeholder="" class="long-input" id="peakDay">
+                    <td><input type="text" placeholder="" class="long-input" id="peakHour">
                 </tr>
             </table>
         </div><br>
@@ -374,8 +374,8 @@
                     <th style="width: 50%;">판매 계획을 책정한 기준과 그 이유는?</th>
                 </tr>
                 <tr>
-                    <td><textarea id="reasonIndustry" rows="5" class="long-input" placeholder="자유롭게 작성하세요"></textarea></td>
-                    <td><textarea id="financeReason" rows="5" class="long-input" placeholder="자유롭게 작성하세요"></textarea></td>
+                    <td><textarea id="reasonIndustry1" rows="5" class="long-input" placeholder="자유롭게 작성하세요"></textarea></td>
+                    <td><textarea id="financeReason1" rows="5" class="long-input" placeholder="자유롭게 작성하세요"></textarea></td>
                 </tr>
             </table>
         </div>
@@ -457,16 +457,17 @@
 
             }
 
-
-
-
 function saveFormAsImage() {
     const formSections = document.querySelectorAll(".form-section");
+
+    // 🔵 A4 비율 기반 컨테이너 생성
     const target = document.createElement("div");
     target.style.backgroundColor = "#ffffff";
-    target.style.padding = "30px";
-    target.style.width = "100%";
+    target.style.padding = "40px";
+    target.style.width = "794px";          // A4 가로(px) = 21cm * 96dpi
+    target.style.minHeight = "1123px";     // A4 세로(px) = 29.7cm * 96dpi
     target.style.fontFamily = "'Nanum Gothic', sans-serif";
+    target.style.boxSizing = "border-box";
 
     formSections.forEach(section => {
         const cloned = section.cloneNode(true);
@@ -484,7 +485,7 @@ function saveFormAsImage() {
             textarea.parentNode.replaceChild(div, textarea);
         });
 
-        // number input → span (comma formatting)
+        // number input → span
         const numberInputs = cloned.querySelectorAll('input[type="number"]');
         numberInputs.forEach(input => {
             const span = document.createElement("span");
@@ -533,7 +534,7 @@ function saveFormAsImage() {
         target.appendChild(cloned);
     });
 
-    // 이미지 캡처 및 저장
+    // 이미지로 캡처 및 저장
     document.body.appendChild(target);
     window.scrollTo(0, 0);
 
@@ -545,7 +546,7 @@ function saveFormAsImage() {
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
         if (isIOS) {
-            // iOS: 새 탭에 이미지 열기
+            // 🔵 iOS: 새 탭에 이미지 띄우기
             const dataURL = canvas.toDataURL("image/png");
             const newTab = window.open();
             if (newTab) {
@@ -559,10 +560,10 @@ function saveFormAsImage() {
                 alert("팝업 차단 설정을 해제해주세요.");
             }
         } else {
-            // 기타: 자동 다운로드
+            // 🔵 PC/안드로이드: 자동 다운로드
             const link = document.createElement("a");
             link.href = canvas.toDataURL("image/png");
-            link.download = "창업계획서.png";
+            link.download = "창업계획서_A4.png";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -576,7 +577,25 @@ function saveFormAsImage() {
     });
 }
 
+window.addEventListener("DOMContentLoaded", () => {
+    const fields = document.querySelectorAll("input[type='text'], input[type='number'], textarea");
 
+    fields.forEach(field => {
+        const key = field.id;
+        if (!key) return; // id 없는 항목은 저장하지 않음
+
+        // localStorage 값 불러오기
+        const saved = localStorage.getItem("field_" + key);
+        if (saved !== null) {
+            field.value = saved;
+        }
+
+        // 값 입력할 때마다 저장
+        field.addEventListener("input", () => {
+            localStorage.setItem("field_" + key, field.value);
+        });
+    });
+});
         </script>
 
     </div>
