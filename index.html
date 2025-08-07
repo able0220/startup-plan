@@ -292,16 +292,20 @@
                     <th>내용</th>
                 </tr>
                 <tr>
-                    <td>기업명</td>
+                    <td>창업 기업명</td>
                     <td><input type="text" id="company" class="long-input" placeholder="예: (주)에이블"></td>
                 </tr>
                 <tr>
-                    <td>학번 / 이름</td>
+                    <td>학번 이름</td>
                     <td><input type="text" id="student" class="long-input" placeholder="예: 300719 송다윤, 380902 이영진"></td>
                 </tr>
                 <tr>
-                    <td>창업 아이템 및 업종</td>
-                    <td><input type="text" class="long-input" id="item" placeholder="예: 교육 콘텐츠"></td>
+                    <td>위치</td>
+                    <td><input type="text" class="long-input" id="item" placeholder="예: 대전 서구 도안동"></td>
+                </tr>
+                <tr>
+                    <td>업종</td>
+                    <td><input type="text" class="long-input" id="item" placeholder="예: 교육 > 교육 지원 > 기타 교육지원 서비스업"></td>
                 </tr>
             </table>
         </div><br>
@@ -309,40 +313,22 @@
         <!-- 2. 상권 분석 -->
         <div class="form-section">
             <h2>2. 상권 분석</h2>
-
-            <h3>(1) 상권 특성</h3>
             <table>
                 <tr>
                     <th>항목</th>
-                    <th>점포 수</th>
-                    <th>선택업종 밀집도</th>
-                    <th>시장규모 전월대비 증감률</th>
-                    <th>매출규모 전월대비 증감률</th>
+                    <th>월 평균 매출</th>
+                    <th>선택업종 업소수</th>
+                    <th>일 평균 유동인구</th>
+                    <th>유동인구 많은 요일</th>
+                    <th>유동인구 많은 시간대</th>
                 </tr>
                 <tr>
                     <td>값</td>
-                    <td class="numeric"><input type="number" placeholder="숫자" class="short-input"><span> 개</span></td>
-                    <td class="numeric"><input type="number" placeholder="숫자" class="short-input"><span> %</span></td>
-                    <td class="numeric"><input type="number" placeholder="숫자" class="short-input"><span> %</span></td>
-                    <td class="numeric"><input type="number" placeholder="숫자" class="short-input"><span> %</span></td>
-                </tr>
-            </table>
-
-            <h3>(2) 매출 규모</h3>
-            <table>
-                <tr>
-                    <th>항목</th>
-                    <th>점포당 평균매출</th>
-                    <th>매출 중간값</th>
-                    <th>상위 20% 평균매출</th>
-                    <th>하위 20% 평균매출</th>
-                </tr>
-                <tr>
-                    <td>값</td>
-                    <td class="numeric"><input type="number" placeholder="숫자" class="short-input"><span> 만원</span></td>
-                    <td class="numeric"><input type="number" placeholder="숫자" class="short-input"><span> 만원</span></td>
-                    <td class="numeric"><input type="number" placeholder="숫자" class="short-input"><span> 만원</span></td>
-                    <td class="numeric"><input type="number" placeholder="숫자" class="short-input"><span> 만원</span></td>
+                    <td class="numeric"><input type="number" placeholder="" class="short-input"><span> 만원</span></td>
+                    <td class="numeric"><input type="number" placeholder="" class="short-input"><span> 개</span></td>
+                    <td class="numeric"><input type="number" placeholder="" class="short-input"><span> 명</span></td>
+                    <td><input type="text" placeholder="" class="long-input">
+                    <td><input type="text" placeholder="" class="long-input">
                 </tr>
             </table>
         </div><br>
@@ -377,6 +363,14 @@
             <table>
                 <tr>
                     <th style="width: 50%;">해당 업종을 선택한 이유는?</th>
+                    <th style="width: 50%;">선택한 업종의 특장점은?</th>
+                </tr>
+                <tr>
+                    <td><textarea id="reasonIndustry" rows="5" class="long-input" placeholder="자유롭게 작성하세요"></textarea></td>
+                    <td><textarea id="financeReason" rows="5" class="long-input" placeholder="자유롭게 작성하세요"></textarea></td>
+                </tr>
+                <tr>
+                    <th style="width: 50%;">자신(창업주)의 창업 전략 및 강점은?</th>
                     <th style="width: 50%;">판매 계획을 책정한 기준과 그 이유는?</th>
                 </tr>
                 <tr>
