@@ -31,6 +31,16 @@
         radial-gradient(900px 420px at 80% 10%, #edf6ff 0%, transparent 55%),
         var(--bg);
     }
+
+    /* ✅ 모바일에서 좌우 잘림 방지 핵심 */
+    html, body{
+      width:100%;
+      max-width:100%;
+      overflow-x:hidden;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
     .wrap{ max-width:1100px; margin:18px auto 70px; padding:0 16px; }
 
     /* 배너 이미지 */
@@ -53,7 +63,7 @@
     }
     button{
       border:1px solid var(--line);
-      background:#fff;
+      background:#cddbf2;
       color:var(--text);
       border-radius:12px;
       padding:10px 12px;
@@ -61,6 +71,7 @@
       cursor:pointer;
       box-shadow: 0 8px 20px rgba(15,23,42,.05);
       white-space:nowrap;
+      touch-action: manipulation;
     }
     button.primary{
       background:linear-gradient(90deg, var(--blue2), var(--blue));
@@ -76,6 +87,7 @@
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       overflow:hidden;
+      max-width:100%;
     }
     details summary{
       list-style:none;
@@ -86,7 +98,7 @@
       justify-content:space-between;
       gap:10px;
       user-select:none;
-      background:linear-gradient(90deg, rgba(47,111,235,.08), transparent); /* ✅ 평상시엔 OK */
+      background:linear-gradient(90deg, rgba(47,111,235,.08), transparent);
       border-bottom:1px solid var(--line);
     }
     details summary::-webkit-details-marker{ display:none; }
@@ -136,6 +148,7 @@
       outline:none;
       font-weight:850;
       color:var(--text);
+      max-width:100%;
     }
     .field::placeholder{ color:#94a3b8; font-weight:850; }
     .field:focus{
@@ -159,14 +172,13 @@
     .inline .other{ flex:1; }
     .hidden{ display:none; }
 
-    /* ✅ 장문 textarea: 엔터/줄바꿈 포함 + 자동 늘어남 */
     textarea.field{
       line-height:1.55;
       white-space:pre-wrap;
       overflow-wrap:anywhere;
       resize:none;
       min-height:110px;
-      overflow:hidden; /* autoGrow와 함께 사용 */
+      overflow:hidden;
     }
 
     /* 예산 레이아웃 */
@@ -201,7 +213,6 @@
     }
     .hint strong{ color:#334155; font-weight:980; }
 
-    /* ✅ 남은 금액 아래 (00만원) */
     .remain-sub{
       display:block;
       margin-top:4px;
@@ -248,19 +259,17 @@
       background:#fff !important;
     }
 
-    /* ✅ 회색 블럭(그라데이션/투명) 방지 핵심 */
     body.capture-mode details summary{
-      background:#ffffff !important;     /* 또는 #f2f6ff */
+      background:#ffffff !important;
       background-image:none !important;
     }
     body.capture-mode .card{
-      box-shadow:none !important;        /* 그림자도 회색띠처럼 찍히는 경우 있음 */
+      box-shadow:none !important;
     }
     body.capture-mode .step{
       background:#ffffff !important;
     }
 
-    /* ✅ 캡처용 textarea 미러(잘림 방지 핵심) */
     .ta-mirror{
       width:100%;
       border-radius:12px;
@@ -276,6 +285,91 @@
     }
     body.capture-mode textarea.field{
       display:none !important;
+    }
+
+    /* =========================
+       ✅ 모바일 전용 UX 개선
+       - "표(table) 가로 4칸" 때문에 화면이 잘리던 문제 해결
+       - 모바일에서는 table을 카드형(세로)로 재배치
+       ========================= */
+    @media (max-width: 640px){
+      .wrap{ padding: 0 12px; margin: 12px auto 54px; }
+
+      details summary{ padding: 12px 12px; }
+      .content{ padding: 12px 12px 14px; }
+
+      .toolbar{ justify-content: stretch; gap:8px; }
+      .toolbar button{ flex: 1 1 calc(50% - 8px); padding: 11px 10px; }
+
+      th, td{ font-size: 13px; padding: 10px 10px; }
+      .field{ padding: 12px 12px; font-size: 14px; }
+      textarea.field{ min-height: 120px; }
+
+      /* ✅ 핵심: 모바일에서는 모든 table 행을 "세로 스택" */
+      table{ border-radius: 14px; }
+
+      /* 일반 정보 입력(4칸짜리) 테이블을 카드형으로 */
+      .content table tr{
+        display:grid;
+        grid-template-columns: 1fr;
+      }
+      .content table th{
+        display:block;
+        width:auto !important;
+        border-bottom:0;
+        border-top:1px solid #eef2ff;
+        background:#f2f6ff;
+      }
+      .content table td{
+        display:block;
+        width:auto !important;
+        border-bottom:0;
+      }
+      .content table tr:first-child th{
+        border-top:0;
+      }
+
+      /* ✅ "옵션 상품/예산" 같이 헤더가 있는 표는 가로 스크롤로 (행 UI는 유지) */
+      table thead{ display:none; }
+      #optionBody tr, #budgetBody tr{
+        display:grid;
+        grid-template-columns: 1fr;
+        gap:8px;
+        padding:10px 10px;
+        border-bottom:1px solid #eef2ff;
+      }
+      #optionBody tr td, #budgetBody tr td{
+        border-bottom:0 !important;
+        padding:0 !important;
+      }
+
+      /* 예산: 각 입력을 세로로 보기 좋게 */
+      #budgetBody tr td:nth-child(6),
+      #optionBody tr td:nth-child(3){
+        justify-self:end;
+      }
+
+      /* 숫자 오른쪽 정렬은 모바일에서 과하게 어색할 수 있어 보정 */
+      .num{ text-align:right; }
+
+      /* sticky 차트는 모바일에서 아래로 */
+      .chart-card{
+        position: static;
+        top:auto;
+      }
+
+      /* summary 타이틀이 길면 줄바꿈 허용 */
+      .sum-title{
+        white-space: normal;
+        line-height:1.2;
+      }
+    }
+
+    /* 더 작은 폰(아이폰 SE급) */
+    @media (max-width: 380px){
+      .toolbar button{ flex:1 1 100%; }
+      .field{ font-size: 14px; }
+      th{ font-size: 12px; }
     }
   </style>
 
@@ -330,7 +424,7 @@
                     <option value="지역·오프라인">지역·오프라인</option>
                     <option value="기타">기타</option>
                   </select>
-                  <input class="field other hidden" name="industryOther" id="industryOther" placeholder="창업 세부 업종을 입력" />
+                  <input class="field other hidden" name="industryOther" id="industryOther" placeholder="창업 세부 업종 입력" />
                 </div>
               </td>
             </tr>
@@ -359,7 +453,7 @@
                     <option value="온라인 고객">온라인 고객</option>
                     <option value="기타">기타</option>
                   </select>
-                  <input class="field other hidden" name="targetOther" id="targetOther" placeholder="창업 타겟을 입력" />
+                  <input class="field other hidden" name="targetOther" id="targetOther" placeholder="창업 타겟 입력" />
                 </div>
               </td>
             </tr>
@@ -389,7 +483,7 @@
               <th style="width:140px;">대표 상품</th>
               <td><input class="field" name="mainProduct" placeholder="예: 교육 서비스" /></td>
               <th style="width:140px;">판매가(원)</th>
-              <td><input class="field mono num" name="mainPrice" data-format="comma" inputmode="numeric" placeholder="숫자 입력" /></td>
+              <td><input class="field mono num" name="mainPrice" data-format="comma" inputmode="numeric" placeholder="금액 입력" /></td>
             </tr>
           </table>
 
@@ -408,7 +502,6 @@
             <tbody id="optionBody"></tbody>
           </table>
 
-          <!-- ✅ 추가: 판매 전략 및 홍보 계획(장문) -->
           <table style="margin-top:10px;">
             <tr>
               <th style="width:200px;">판매 전략</th>
@@ -492,7 +585,7 @@
   <script>
     const $ = (s, el=document)=>el.querySelector(s);
     const $$ = (s, el=document)=>Array.from(el.querySelectorAll(s));
-    const STORAGE_KEY = 'startup_plan_compact_v11'; // ✅ 변경: 새 필드 추가했으니 버전 올림
+    const STORAGE_KEY = 'startup_plan_compact_v11';
 
     const fmtWon = (n)=> (Number.isFinite(n)?n:0).toLocaleString('ko-KR') + '원';
     const toNum = (v)=>{
@@ -586,7 +679,6 @@
       toggleOther($('#targetSel'), $('#targetOther'));
     }
 
-    /* 천단위 쉼표 */
     function addCommas(numStr){
       const s = String(numStr).replace(/[^\d]/g,'');
       if(!s) return '';
@@ -600,7 +692,6 @@
       $$('#budgetBody input[data-format="comma"], #optionBody input[data-format="comma"]').forEach(el => formatCommaInput(el));
     }
 
-    /* ✅ textarea 자동 높이 */
     function autoGrow(el){
       if(!el) return;
       el.style.height = 'auto';
@@ -621,12 +712,11 @@
       $$('textarea.field').forEach(t=>autoGrow(t));
     }
 
-    /* 옵션 상품 */
     function optionRowTemplate(row={}){
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><input class="field" name="oName" placeholder="예: 옵션 추가" value="${(row.name||'').replaceAll('"','&quot;')}" /></td>
-        <td class="right"><input class="field mono num" name="oPrice" data-format="comma" inputmode="numeric" placeholder="예: 숫자 입력" value="${row.price||''}" /></td>
+        <td class="right"><input class="field mono num" name="oPrice" data-format="comma" inputmode="numeric" placeholder="금액 입력" value="${row.price||''}" /></td>
         <td class="right col-action"><button type="button" class="no-capture" data-role="delOpt">삭제</button></td>
       `;
       const priceEl = $('input[name="oPrice"]', tr);
@@ -641,7 +731,6 @@
       if(doSave) save();
     }
 
-    /* 예산 */
     function budgetRowTemplate(row={}){
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -656,8 +745,8 @@
           </select>
         </td>
         <td><input class="field" name="bItem" placeholder="예: 세부 내용 입력" value="${(row.item||'').replaceAll('"','&quot;')}" /></td>
-        <td class="right"><input class="field mono num" name="bCost" data-format="comma" inputmode="numeric" placeholder="0" value="${row.cost||''}"/></td>
-        <td class="right"><input class="field mono num" name="bQty" inputmode="numeric" placeholder="1" value="${row.qty||''}"/></td>
+        <td class="right"><input class="field mono num" name="bCost" data-format="comma" inputmode="numeric" placeholder="금액" value="${row.cost||''}"/></td>
+        <td class="right"><input class="field mono num" name="bQty" inputmode="numeric" placeholder="수량" value="${row.qty||''}"/></td>
         <td class="right"><strong class="mono" data-role="rowSum">0원</strong></td>
         <td class="right col-action"><button type="button" class="no-capture" data-role="delRow">삭제</button></td>
       `;
@@ -703,7 +792,6 @@
       renderPieSvg();
     }
 
-    /* 차트: SVG */
     function polarToCartesian(cx, cy, r, a){
       return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
     }
@@ -770,7 +858,6 @@
       `;
     }
 
-    /* 상단 버튼 */
     $('#btnExpandAll').addEventListener('click', ()=>{
       $$('details.card').forEach(d=>d.open=true);
       save();
@@ -801,12 +888,10 @@
 
     bindAutoGrow($('#competitorDiff'));
     bindAutoGrow($('#biggestReason'));
-    bindAutoGrow($('#salesPlan')); /* ✅ 새 textarea도 자동높이/자동저장 */
+    bindAutoGrow($('#salesPlan'));
 
-    /* ✅ 캡처 직전 textarea 미러 생성/제거 */
     function addTextareaMirrors(){
       $$('.ta-mirror').forEach(m => m.remove());
-
       $$('textarea.field').forEach(ta=>{
         const div = document.createElement('div');
         div.className = 'ta-mirror';
@@ -818,7 +903,6 @@
       $$('.ta-mirror').forEach(m => m.remove());
     }
 
-    /* 이미지 저장 */
     function safeFileName(name){
       const raw = (name || '').trim();
       const base = raw ? raw : 'startup_plan';
@@ -844,8 +928,6 @@
         height: h,
         scrollX: 0,
         scrollY: 0,
-
-        /* ✅ 캡처 복제본에서 그라데이션/그림자 재차 제거(회색 블럭 방지) */
         onclone: (doc) => {
           doc.querySelectorAll('details summary').forEach(s=>{
             s.style.background = '#ffffff';
@@ -881,7 +963,6 @@
 
         document.body.classList.add('capture-mode');
 
-        /* ✅ 폰트 로딩 대기(줄바꿈/높이 안정화) */
         if (document.fonts && document.fonts.ready) {
           try { await document.fonts.ready; } catch(e) {}
         }
@@ -906,7 +987,6 @@
 
     $('#btnSaveImage').addEventListener('click', saveAsOneImage);
 
-    /* 초기화 */
     function resetAll(){
       localStorage.removeItem(STORAGE_KEY);
 
@@ -938,7 +1018,6 @@
       resetAll();
     });
 
-    /* 초기 실행 */
     (function init(){
       load();
 
